@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render a validated profile.json into paste-friendly profile.md and a skill package.
+"""Render a validated profile.json into paste-friendly profile.md, evidence appendix, and a skill package.
 
 profile.md can be pasted into any AI tool. The generated skill package can be
 installed into Codex-style skill directories.
@@ -79,7 +79,7 @@ def build_evidence_md(profile: dict) -> str:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Render profile.json to profile.md and personal-context-skill/.")
+    parser = argparse.ArgumentParser(description="Render profile.json to profile.md, profile-evidence.md, and personal-context-skill/.")
     parser.add_argument("--profile", type=Path, required=True)
     parser.add_argument("--out-dir", type=Path, default=Path.home() / ".pls-remember-me" / "out")
     args = parser.parse_args()

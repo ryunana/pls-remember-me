@@ -101,7 +101,7 @@ def main() -> int:
     p_val.add_argument("--friction", type=Path, default=None, help="Optional friction.jsonl to verify evidence refs")
     p_val.set_defaults(func=cmd_validate)
 
-    p_ren = sub.add_parser("render", help="Render profile.json to profile.md and personal-context-skill/.")
+    p_ren = sub.add_parser("render", help="Render profile.json to profile.md, profile-evidence.md, and personal-context-skill/.")
     p_ren.add_argument("--profile", type=Path, required=True)
     p_ren.add_argument("--out-dir", type=Path, default=Path.home() / ".pls-remember-me" / "out")
     p_ren.set_defaults(func=cmd_render)

@@ -5,7 +5,7 @@ Abstracted from personal-context-infrastructure/scripts/export_ai_chats.py:
 - removed Path.home() hardcoding → user must pass --input-dir (one or more)
 - streaming jsonl read with early type filtering (S-1 finding: codex single file up to 250MB)
 - per-record path stripped to public_ref (no local filesystem paths leak downstream)
-- minimal redaction for API key / email / phone
+- placeholder redaction for secrets / auth artifacts / local paths / email / phone
 - adapter dispatch by directory hint or file pattern
 
 Usage:
