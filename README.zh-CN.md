@@ -9,6 +9,7 @@
 然后，你把这份证据包交给自己选择的 AI 工具。AI 输出 `profile.json`；本项目负责校验它，并渲染出：
 
 - 可直接粘贴使用的 `profile.md`
+- 单独用于审计追溯的 `profile-evidence.md`
 - 可安装到 Codex 风格 skill 目录里的本地 `personal-context-skill/` 包
 
 这个项目不是聊天记录总结器。它的目标是产出第一份个人 context seed：你如何判断、如何取舍、希望 AI 怎样与你协作。
@@ -26,7 +27,7 @@
 ## 不用个人数据先试一下
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/ryunana/pls-remember-me.git
 cd pls-remember-me
 bash scripts/run_demo.sh
 ```
@@ -80,6 +81,7 @@ python3 scripts/pls_remember_me.py render --profile profile.json
 这会生成：
 
 - `~/.pls-remember-me/out/<timestamp>-profile.md`
+- `~/.pls-remember-me/out/<timestamp>-profile-evidence.md`
 - `~/.pls-remember-me/out/personal-context-skill/SKILL.md`
 - `~/.pls-remember-me/out/personal-context-skill/context-profile.md`
 
@@ -99,11 +101,13 @@ cp -R ~/.pls-remember-me/out/personal-context-skill ~/.codex/skills/personal-con
 - Codex `rollout-*.jsonl` 解析
 - ChatMemo `.txt` dump 解析
 - JSONL 流式读取和早期噪声过滤
-- 占位符脱敏：`[SECRET]`、`[EMAIL]`、`[PHONE]`
+- 对 secrets、认证 URL、device code、终端登录行、本机路径、邮箱和手机号做占位符脱敏
 - 不含本机路径的 `public_ref` 证据引用
 - 蒸馏证据包生成
+- packet 选材时对长篇粘贴材料做通用结构降权
 - profile 校验和 evidence ref 检查
 - `profile.md` 渲染
+- evidence appendix 渲染
 - `personal-context-skill/` 渲染
 
 已知限制：

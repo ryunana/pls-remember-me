@@ -13,9 +13,14 @@ from __future__ import annotations
 
 import argparse
 import json
-from collections import Counter, defaultdict
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
+
+try:
+    from common import pasted_context_penalty, redact
+except ImportError:  # pragma: no cover - supports package-style imports
+    from .common import pasted_context_penalty, redact
 
 
 PROMPT_HEADER = """\
@@ -69,10 +74,9 @@ axiom = "这位用户怎么判断 / 怎么取舍 / 怎么要求 AI 配合"，**�
 
 ## 证据：高信号片段（按命中关键词强度排序）
 
-下面每个片段都是一条用户的真实消息。**只引用这里出现的 `public_ref`**。
+下面每个片段都是一条用户的真实消息。长篇粘贴材料会被通用结构规则降权，以优先保留用户自己的纠正、边界和协作要求。**只引用这里出现的 `public_ref`**。
 
 """
-
 
 def score_hit(found: list[str], text: str) -> int:
     important = {
@@ -80,7 +84,11 @@ def score_hit(found: list[str], text: str) -> int:
         "不要脑补", "不要伪造", "信息不足", "不应该", "错", "问题是",
         "关键是", "不够", "现实", "难", "麻烦", "边界", "细化", "完整",
     }
-    return sum(4 if kw in important else 1 for kw in found) + min(len(text) // 600, 2)
+    base = sum(4 if kw in important else 1 for kw in found)
+    penalty = pasted_context_penalty(text)
+    if penalty:
+        return base - penalty
+    return base + min(len(text) // 600, 2)
 
 
 def clip(text: str, limit: int = 600) -> str:
@@ -125,7 +133,7 @@ def main() -> int:
     by_source: Counter[str] = Counter()
 
     for snippet, _score in scored[: args.top]:
-        text = clip(snippet.get("text", ""), 600)
+        text = clip(redact(snippet.get("text", "")), 600)
         ref = snippet.get("public_ref", "?")
         kws = ", ".join(snippet.get("keywords", []))
         block = f"### snippet {used + 1}\n\n- ref: `{ref}`\n- keywords: {kws}\n- source: {snippet.get('source', '?')}\n\n> {text}\n\n"

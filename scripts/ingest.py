@@ -29,6 +29,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterable
 
+try:
+    from common import pasted_context_penalty, redact
+except ImportError:  # pragma: no cover - supports package-style imports
+    from .common import pasted_context_penalty, redact
+
 
 DEFAULT_KEYWORDS = [
     "不对", "不是这个意思", "重写", "太泛", "废话", "我想要的是", "不要", "不应该",
@@ -79,16 +84,6 @@ CODEX_NOISE_RESPONSE_TYPES = {
     "custom_tool_call", "custom_tool_call_output", "web_search_call",
 }
 
-# C6 redaction patterns (placeholder substitution preserves sentence structure)
-REDACTION_PATTERNS = [
-    (re.compile(r"sk-[A-Za-z0-9_\-]{16,}"), "[SECRET]"),
-    (re.compile(r"sk-ant-[A-Za-z0-9_\-]{16,}"), "[SECRET]"),
-    (re.compile(r"xox[bps]-[A-Za-z0-9_\-]{8,}"), "[SECRET]"),
-    (re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"), "[EMAIL]"),
-    (re.compile(r"\b1[3-9]\d{9}\b"), "[PHONE]"),  # CN mobile
-]
-
-
 @dataclass(frozen=True)
 class Message:
     source: str          # "claude-code" | "codex" | "chatmemo"
@@ -96,12 +91,6 @@ class Message:
     role: str
     text: str
     public_ref: str      # safe-to-publish reference (no local paths)
-
-
-def redact(text: str) -> str:
-    for pattern, placeholder in REDACTION_PATTERNS:
-        text = pattern.sub(placeholder, text)
-    return text
 
 
 def content_to_text(content: Any) -> str:
@@ -351,7 +340,11 @@ def score_hit(found: list[str], text: str) -> int:
         "不要脑补", "不要伪造", "信息不足", "不应该", "错", "问题是",
         "关键是", "不够", "现实", "难", "麻烦", "边界", "细化", "完整",
     }
-    return sum(4 if keyword in important else 1 for keyword in found) + min(len(text) // 600, 2)
+    base = sum(4 if keyword in important else 1 for keyword in found)
+    penalty = pasted_context_penalty(text)
+    if penalty:
+        return base - penalty
+    return base + min(len(text) // 600, 2)
 
 
 def write_outputs(messages: list[Message], keywords: list[str], output_dir: Path, top_n: int) -> tuple[Path, Path]:

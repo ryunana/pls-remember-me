@@ -9,6 +9,7 @@
 You then give that packet to an AI tool you choose. The AI produces a `profile.json`; this project validates it and renders:
 
 - a paste-friendly `profile.md`
+- a separate `profile-evidence.md` audit appendix
 - a local `personal-context-skill/` package you can install into Codex-style skill directories
 
 The goal is not to summarize your chat history. The goal is to produce a first personal context seed: how you judge, how you make tradeoffs, and how an AI should collaborate with you.
@@ -26,7 +27,7 @@ Your real data stays on your machine and inside the AI tool you explicitly choos
 ## Try It With No Personal Data
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/ryunana/pls-remember-me.git
 cd pls-remember-me
 bash scripts/run_demo.sh
 ```
@@ -80,6 +81,7 @@ python3 scripts/pls_remember_me.py render --profile profile.json
 This writes:
 
 - `~/.pls-remember-me/out/<timestamp>-profile.md`
+- `~/.pls-remember-me/out/<timestamp>-profile-evidence.md`
 - `~/.pls-remember-me/out/personal-context-skill/SKILL.md`
 - `~/.pls-remember-me/out/personal-context-skill/context-profile.md`
 
@@ -99,11 +101,13 @@ Implemented:
 - Codex `rollout-*.jsonl` parsing
 - ChatMemo `.txt` dump parsing
 - streaming JSONL reading and early noise filtering
-- redaction placeholders: `[SECRET]`, `[EMAIL]`, `[PHONE]`
+- redaction placeholders for secrets, auth URLs, device codes, terminal login lines, local paths, emails, and phone numbers
 - path-free `public_ref` evidence references
 - distillation packet generation
+- generic downranking for long pasted source material in packet selection
 - profile validation with evidence-ref checks
 - `profile.md` rendering
+- evidence appendix rendering
 - `personal-context-skill/` rendering
 
 Known limits:

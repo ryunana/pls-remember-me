@@ -2,7 +2,7 @@
 
 > 本文档描述当前 v1 的实际架构，不是历史计划，也不是 v1.1 目标架构。
 >
-> 当前 v1 是一个本地流水线：把用户本机 AI 对话日志整理成证据包，让用户用自己选择的 AI 工具蒸馏 `profile.json`，再由本项目校验并渲染成 `profile.md` 和本地 skill 包。
+> 当前 v1 是一个本地流水线：把用户本机 AI 对话日志整理成证据包，让用户用自己选择的 AI 工具蒸馏 `profile.json`，再由本项目校验并渲染成干净的 `profile.md`、审计用 evidence appendix 和本地 skill 包。
 
 ## 1. Product Boundary
 
@@ -14,7 +14,7 @@ v1 只做第一份可追溯的 personal context seed：
 2. 提取高信号用户片段。
 3. 生成可交给 AI 的 distillation packet。
 4. 校验 AI 产出的 profile JSON。
-5. 渲染成可粘贴的 Markdown profile 和可安装的 personal context skill。
+5. 渲染成可粘贴的 Markdown profile、审计用 evidence appendix 和可安装的 personal context skill。
 
 v1 不是完整的长期 memory backend，也不是自动化托管服务。
 
@@ -39,12 +39,13 @@ scripts/ingest.py
   - detect source format
   - parse Claude Code / Codex / ChatMemo
   - filter system/tool/noise records
-  - redact secrets / email / phone
+  - redact secrets / auth URLs / device codes / terminal login lines / local paths / email / phone
   - emit summary.md + friction.jsonl
   │
   ▼
 scripts/packet.py
   - rank keyword hits
+  - downrank long pasted source material by generic structure signals
   - clip snippets
   - enforce soft packet size cap
   - emit distillation_packet.md
@@ -65,6 +66,7 @@ scripts/validate.py
   ▼
 scripts/render.py
   - emits paste-friendly profile.md
+  - emits profile-evidence.md for audit refs
   - emits personal-context-skill/
 ```
 
@@ -125,6 +127,7 @@ pls-remember-me/
 Rendered real outputs are not committed. By default they live under `~/.pls-remember-me/out`, including:
 
 - `<timestamp>-profile.md`
+- `<timestamp>-profile-evidence.md`
 - `personal-context-skill/SKILL.md`
 - `personal-context-skill/context-profile.md`
 
@@ -166,6 +169,8 @@ Each line in `*-friction.jsonl` contains:
 
 This file is the evidence source for `packet.py` and optional reference checking in `validate.py`.
 
+`packet.py` does not try to recognize domain-specific pasted material. Instead, it downranks long multi-line blocks with generic source-material structure, such as many list, table, quote, heading, code, or very long lines. The aim is to keep the packet focused on the user's own corrections and collaboration requirements without hardcoding business-rubric phrases.
+
 ### Profile JSON Contract
 
 `profile.json` is produced by the user-selected AI tool. v1 expects:
@@ -185,10 +190,14 @@ This file is the evidence source for `packet.py` and optional reference checking
 `ingest.py` replaces common sensitive patterns with placeholders:
 
 - `[SECRET]`
+- `[AUTH_URL]`
+- `[DEVICE_CODE]`
+- `[TERMINAL_LOGIN]`
+- `[LOCAL_PATH]`
 - `[EMAIL]`
 - `[PHONE]`
 
-The goal is to preserve sentence structure while removing obvious secrets and personal contact details.
+The goal is to preserve sentence structure while removing obvious secrets, local machine paths, auth artifacts, and personal contact details.
 
 ### Public Refs
 
@@ -210,7 +219,7 @@ It intentionally avoids raw file paths. It is suitable for evidence linking insi
 └── context-profile.md
 ```
 
-`SKILL.md` tells the AI to load `context-profile.md` first. `context-profile.md` contains the rendered axioms and evidence refs from the validated profile.
+`SKILL.md` tells the AI to load `context-profile.md` first. `context-profile.md` contains the clean collaboration rules from the validated profile. Evidence refs are kept in `<timestamp>-profile-evidence.md` for audit instead of being loaded by default.
 
 Users can install it into Codex-style skill directories with:
 

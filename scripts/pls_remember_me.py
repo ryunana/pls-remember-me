@@ -4,7 +4,7 @@
 Subcommands (v1):
   prepare    Scan --input-dir, generate friction.jsonl + summary.md + distillation_packet.md
   validate   Check AI-produced profile.json against schema
-  render     Render validated profile.json to profile.md + skill package
+  render     Render validated profile.json to profile.md + evidence appendix + skill package
 
 Workflow:
   1. python3 scripts/pls_remember_me.py prepare --input-dir ~/.claude/projects --input-dir ~/.codex/sessions
