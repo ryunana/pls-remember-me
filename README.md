@@ -71,20 +71,25 @@ python3 scripts/pls_remember_me.py render --profile profile.json
 ## v1 当前能做和不能做
 
 **能做**：
-- 4 种来源解析：Claude Code (.jsonl) / Codex (rollout-*.jsonl) / Hermes / ChatMemo
-  （demo 演示前两种）
+- 3 种来源解析：Claude Code (.jsonl) / Codex (rollout-*.jsonl) / ChatMemo (txt dump)
+  （demo 演示前两种；Hermes 计划在 v1.1）
 - 流式读 + 早期噪声过滤（应对 Codex 单文件最大 250MB 的真实情况）
 - 占位符脱敏（`[SECRET]` / `[EMAIL]` / `[PHONE]`），保留文本语义结构
 - 公开引用 `public_ref`（不暴露本机路径、项目名、仓库名）
 - axiom 校验：≥2 条证据、confidence 枚举、`evidence_refs` 必须真实存在
 
 **不能做（v1 已知限制，留 v1.1）**：
-- **只蒸"判断原则"**——你的角色定位、表达风格偏好、常用业务主题这些不会被单独立条目
-  （它们会出现在 packet 的高信号片段里，但 axiom-first 的产物不会专门捕获）
+
+- **只蒸"判断原则"（axiom-first），不蒸身份/风格/领域信号**——你的角色定位（如"我是 PM"）、
+  表达风格偏好（如"喜欢自嘲命名"）、常用业务主题（如"AI 副业 / 简历优化"）这些**会出现在
+  packet 的证据里**，但 v1 的 axiom-first 产物不会专门给它们立条目。如果你跑出 profile 后
+  觉得"内容是我，但少了几个我自己的标签"——这就是 v1 已知 gap，留 v1.1 加 identity / style /
+  domain 三类信号提取。
 - **跨次重蒸跨次不可比**——v1 全量重蒸，每次跑都重新扫历史；`first_seen` / `last_seen` /
-  `count` 只反映本次语料的时间分布，不要把它们当作"这条偏好正在累积"
-- **daily / weekly 子命令未上**——v1.1 会补，让 observer/reflector 形态在本地循环起来
-- **网页端 AI 工具导出（ChatGPT / Claude.ai / DeepSeek / 豆包 / Kimi）暂不支持**
+  `count` 只反映本次语料的时间分布，不要把它们当作"这条偏好正在累积"。
+- **daily / weekly 子命令未上**——v1.1 会补，让 observer/reflector 形态在本地循环起来。
+- **Hermes 适配器未实现**——计划在 v1.1（数据从 `~/.hermes/state.db` SQLite 抽，需要单独写）。
+- **网页端 AI 工具导出（ChatGPT / Claude.ai / DeepSeek / 豆包 / Kimi）暂不支持**。
 
 ---
 
