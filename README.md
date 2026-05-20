@@ -1,108 +1,132 @@
 # pls-remember-me
 
-> 让 AI 别再说"你是谁来着？"
+[English](README.md) | [简体中文](README.zh-CN.md)
 
-每换一个 AI 工具、每开一个新会话，你都要重新解释一遍自己是谁、怎么工作、什么不能碰。
+> Stop reintroducing yourself to every new AI session.
 
-`pls-remember-me` 扫你本机的 AI 对话日志，整理成可追溯证据包，再借助你**自己选择**的 AI
-工具（Claude Code / Codex 等）蒸馏出一份个人 `profile.md`——"我是谁 / 我怎么判断 / 我希望
-AI 怎么配合我"。你可以把它粘到任何新 AI 会话里。
+`pls-remember-me` is a local tool for heavy AI users. It scans your own Claude Code / Codex style chat logs, extracts high-signal moments where you corrected, constrained, or redirected an AI, and turns them into a traceable evidence packet.
 
-**它不是聊天记录总结器**，不是替你托管记忆的服务。目标是帮重度 AI 用户启动自己的**个人
-context infrastructure**：把散落在历史对话里的稳定判断原则显性化，后续持续积累。
+You then give that packet to an AI tool you choose. The AI produces a `profile.json`; this project validates it and renders:
 
----
+- a paste-friendly `profile.md`
+- a local `personal-context-skill/` package you can install into Codex-style skill directories
 
-## 30 秒看它干了什么（不用你的任何数据）
+The goal is not to summarize your chat history. The goal is to produce a first personal context seed: how you judge, how you make tradeoffs, and how an AI should collaborate with you.
+
+## What It Does Not Do
+
+- It does not upload your logs.
+- It does not run a hosted memory service.
+- It does not automatically call a cloud model.
+- It does not collect analytics.
+- It does not commit your real profile or real logs into this repo.
+
+Your real data stays on your machine and inside the AI tool you explicitly choose for distillation.
+
+## Try It With No Personal Data
 
 ```bash
-git clone <repo>
+git clone <repo-url>
 cd pls-remember-me
 bash scripts/run_demo.sh
 ```
 
-仓库自带 3 个合成 demo 会话（`samples/logs/`，20+ 条消息），脚本会跑一次完整的
-ingest → friction → packet 流程。耗时 < 1 秒。
+The demo uses synthetic logs under `samples/logs/` and writes gitignored output to `samples/out/`:
 
-产物落在 `samples/out/`（gitignored，不会进你的提交）：
-- `*-summary.md`——关键词分布、theme 命中、top friction 片段
-- `*-friction.jsonl`——机器可读
-- `*-distillation_packet.md`——可直接发给 AI 的蒸馏证据包（带 prompt + 严格 JSON 输出契约）
+- `*-summary.md`
+- `*-friction.jsonl`
+- `*-distillation_packet.md`
 
-合成样本只够演示**格式**——真实价值在下一段。
+This proves the local pipeline works. The demo data is intentionally small, so it only shows the format, not the real value of running on your own history.
 
----
+## Run It On Your Logs
 
-## 用你自己的数据（真实路径）
+### 1. Build A Distillation Packet
 
 ```bash
-# 1. 扫描你的 Claude Code / Codex 日志，生成证据包
 python3 scripts/pls_remember_me.py prepare \
-    --input-dir ~/.claude/projects \
-    --input-dir ~/.codex/sessions
+  --input-dir ~/.claude/projects \
+  --input-dir ~/.codex/sessions
+```
 
-# 2. 把生成的 distillation_packet.md 整段发给 Claude Code 或 Codex，
-#    让它按 packet 顶部的 prompt 输出严格 JSON，保存为 profile.json
+By default, output goes to:
 
-# 3. 校验 AI 蒸出来的 profile.json
+```bash
+~/.pls-remember-me/out
+```
+
+### 2. Ask Your AI Tool To Distill The Packet
+
+Open the generated `*-distillation_packet.md`, paste it into Claude Code / Codex / another AI tool you trust, and ask it to follow the packet instructions exactly.
+
+Save the AI output as `profile.json`.
+
+### 3. Validate The Profile
+
+```bash
 python3 scripts/pls_remember_me.py validate \
-    --profile profile.json \
-    --friction ~/.pls-remember-me/out/<时间戳>-friction.jsonl
+  --profile profile.json \
+  --friction ~/.pls-remember-me/out/<timestamp>-friction.jsonl
+```
 
-# 4. 渲染成可粘贴的 profile.md
+If validation fails, the command prints a rewrite instruction you can paste back to the AI.
+
+### 4. Render Markdown + Skill Package
+
+```bash
 python3 scripts/pls_remember_me.py render --profile profile.json
 ```
 
-`profile.md` 是最终产物——贴到任何 AI 工具的 system prompt / 项目 context 文件 /
-第一条消息里，让它在和你协作前就理解你的判断方式。
+This writes:
 
-### 几个事实
+- `~/.pls-remember-me/out/<timestamp>-profile.md`
+- `~/.pls-remember-me/out/personal-context-skill/SKILL.md`
+- `~/.pls-remember-me/out/personal-context-skill/context-profile.md`
 
-- **不上传**：项目方不托管、不收集、不默认上传你的真实对话。流水线只读 `--input-dir`，
-  不再硬编码任何本机路径。
-- **真实数据只在你本机和你主动选择的 AI 工具之间流转**。
-- **默认产物落 `~/.pls-remember-me/out`**（用户级，gitignored）。
-- **C9 失败回喂**：validator 不通过会打印一段可直接复制给 AI 的回喂指令模板，告诉它该改什么。
-- **真实尺度参考**：本机一次扫 `~/.claude/projects` + `~/.codex/sessions`（约 70 个文件、几 GB），
-  ingest 在 1.5 秒内完成；生成的 packet 约 10K token，在主流 AI 工具 context window 内。
+To install the generated skill into Codex:
 
----
+```bash
+mkdir -p ~/.codex/skills
+rm -rf ~/.codex/skills/personal-context
+cp -R ~/.pls-remember-me/out/personal-context-skill ~/.codex/skills/personal-context
+```
 
-## v1 当前能做和不能做
+## Current v1 Support
 
-**能做**：
-- 3 种来源解析：Claude Code (.jsonl) / Codex (rollout-*.jsonl) / ChatMemo (txt dump)
-  （demo 演示前两种；Hermes 计划在 v1.1）
-- 流式读 + 早期噪声过滤（应对 Codex 单文件最大 250MB 的真实情况）
-- 占位符脱敏（`[SECRET]` / `[EMAIL]` / `[PHONE]`），保留文本语义结构
-- 公开引用 `public_ref`（不暴露本机路径、项目名、仓库名）
-- axiom 校验：≥2 条证据、confidence 枚举、`evidence_refs` 必须真实存在
+Implemented:
 
-**不能做（v1 已知限制，留 v1.1）**：
+- Claude Code `.jsonl` parsing
+- Codex `rollout-*.jsonl` parsing
+- ChatMemo `.txt` dump parsing
+- streaming JSONL reading and early noise filtering
+- redaction placeholders: `[SECRET]`, `[EMAIL]`, `[PHONE]`
+- path-free `public_ref` evidence references
+- distillation packet generation
+- profile validation with evidence-ref checks
+- `profile.md` rendering
+- `personal-context-skill/` rendering
 
-- **只蒸"判断原则"（axiom-first），不蒸身份/风格/领域信号**——你的角色定位（如"我是 PM"）、
-  表达风格偏好（如"喜欢自嘲命名"）、常用业务主题（如"AI 副业 / 简历优化"）这些**会出现在
-  packet 的证据里**，但 v1 的 axiom-first 产物不会专门给它们立条目。如果你跑出 profile 后
-  觉得"内容是我，但少了几个我自己的标签"——这就是 v1 已知 gap，留 v1.1 加 identity / style /
-  domain 三类信号提取。
-- **跨次重蒸跨次不可比**——v1 全量重蒸，每次跑都重新扫历史；`first_seen` / `last_seen` /
-  `count` 只反映本次语料的时间分布，不要把它们当作"这条偏好正在累积"。
-- **daily / weekly 子命令未上**——v1.1 会补，让 observer/reflector 形态在本地循环起来。
-- **Hermes 适配器未实现**——计划在 v1.1（数据从 `~/.hermes/state.db` SQLite 抽，需要单独写）。
-- **网页端 AI 工具导出（ChatGPT / Claude.ai / DeepSeek / 豆包 / Kimi）暂不支持**。
+Known limits:
 
----
+- demo covers synthetic Claude-style logs only
+- ChatMemo parser exists but has no public sample yet
+- Hermes SQLite is not implemented
+- daily / weekly observer commands are not implemented
+- v1 is axiom-first: it captures judgment principles better than identity, style, or domain labels
+- v1 is full rerun, not incremental memory
+- validator checks structure and evidence refs; it does not judge whether an axiom is insightful
 
-## 这跟女娲（nuwa-skill）什么关系
+## Project Boundary
 
-镜像。女娲蒸馏**别人**（名人、公开资料、一次性）；`pls-remember-me` 蒸馏**你自己**
-（私有对话、可持续迭代、用户自选 AI 工具参与）。女娲给 AI 装别人的脑子，这个给 AI 装你自己的脑子。
+This repo contains mechanism and synthetic sample data only.
 
-## 设计边界
+Real logs, generated packets, generated profiles, and generated skills should stay in gitignored or external local paths such as:
 
-详见 [`docs/architecture.md`](docs/architecture.md) 和 [`docs/v1-plan.md`](docs/v1-plan.md)。
-一句话：项目是流水线，skill 只是它的一种产物；仓库里永远没有可识别、可回溯的真实个人数据，
-只有机制 + 公开示例语料。
+- `~/.pls-remember-me/out`
+- `samples/out/`
+- `local_dogfood/`
+
+See [docs/architecture.md](docs/architecture.md) and [docs/v1-plan.md](docs/v1-plan.md) for the current implementation boundary.
 
 ## License
 

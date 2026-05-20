@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Render a validated profile.json into a paste-friendly profile.md.
+"""Render a validated profile.json into paste-friendly profile.md and a skill package.
 
-profile.md is what you paste into any AI tool's system prompt or context
-to make it understand your judgment style.
+profile.md can be pasted into any AI tool. The generated skill package can be
+installed into Codex-style skill directories.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ CONF_BADGE = {
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Render profile.json to profile.md.")
+    parser = argparse.ArgumentParser(description="Render profile.json to profile.md and personal-context-skill/.")
     parser.add_argument("--profile", type=Path, required=True)
     parser.add_argument("--out-dir", type=Path, default=Path.home() / ".pls-remember-me" / "out")
     args = parser.parse_args()
@@ -31,6 +31,9 @@ def main() -> int:
     args.out_dir.mkdir(parents=True, exist_ok=True)
     run_id = datetime.now().strftime("%Y-%m-%d-%H%M%S")
     out_path = args.out_dir / f"{run_id}-profile.md"
+    skill_dir = args.out_dir / "personal-context-skill"
+    skill_path = skill_dir / "SKILL.md"
+    skill_context_path = skill_dir / "context-profile.md"
 
     lines: list[str] = []
     lines.append("# 我的 AI 协作 context\n")
@@ -65,8 +68,43 @@ def main() -> int:
     lines.append("\n---\n\n")
     lines.append("_这份 profile 来自你自己的 AI 协作历史；跨次重蒸跨次不可比（v1 全量重蒸，详见 README）。_\n")
 
-    out_path.write_text("".join(lines), encoding="utf-8")
+    rendered_profile = "".join(lines)
+    out_path.write_text(rendered_profile, encoding="utf-8")
+
+    skill_dir.mkdir(parents=True, exist_ok=True)
+    skill_context_path.write_text(rendered_profile, encoding="utf-8")
+    skill_path.write_text(
+        """---
+name: personal-context
+description: Use when starting work with this user, making product or engineering judgments for them, drafting plans, reviewing AI outputs, or deciding how to collaborate. Applies the user's distilled judgment principles, collaboration preferences, and evidence-backed working rules.
+---
+
+# Personal Context
+
+Use this skill to adapt to this user's working style and judgment principles.
+
+## Load First
+
+Read `context-profile.md` in this skill directory before starting the task.
+
+## Operating Rules
+
+1. Treat `context-profile.md` as user-specific collaboration context, not generic advice.
+2. Apply the axioms when deciding how to plan, answer, review, or implement.
+3. Preserve the evidence-backed boundaries in the profile; do not invent missing identity, domain, or preference facts.
+4. If the current task conflicts with an axiom, follow the latest explicit user instruction and note the conflict only when it affects the work.
+5. If the profile is stale or insufficient for the task, say what is missing instead of guessing.
+
+## Output Style
+
+- Be concrete and task-focused.
+- Prefer evidence, actual files, logs, commands, or source material over plausible inference.
+- Keep explanations proportional to the user's request.
+""",
+        encoding="utf-8",
+    )
     print(f"profile_md={out_path}")
+    print(f"skill_dir={skill_dir}")
     return 0
 
 

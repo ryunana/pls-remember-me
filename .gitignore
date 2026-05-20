@@ -11,6 +11,8 @@ local_out/
 distillation_packet.md
 profile.json
 profile.md
+*-profile.md
+personal-context-skill/
 AI_HANDOFF.local.md
 *.profile.json
 !samples/EXPECTED.profile.json

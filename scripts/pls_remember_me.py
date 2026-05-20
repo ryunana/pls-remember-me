@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """pls-remember-me CLI entry point.
 
-Subcommands (v0.9 MVP):
+Subcommands (v1):
   prepare    Scan --input-dir, generate friction.jsonl + summary.md + distillation_packet.md
   validate   Check AI-produced profile.json against schema
-  render     Render validated profile.json to profile.md
+  render     Render validated profile.json to profile.md + skill package
 
 Workflow:
   1. python3 scripts/pls_remember_me.py prepare --input-dir ~/.claude/projects --input-dir ~/.codex/sessions
@@ -101,7 +101,7 @@ def main() -> int:
     p_val.add_argument("--friction", type=Path, default=None, help="Optional friction.jsonl to verify evidence refs")
     p_val.set_defaults(func=cmd_validate)
 
-    p_ren = sub.add_parser("render", help="Render profile.json to profile.md.")
+    p_ren = sub.add_parser("render", help="Render profile.json to profile.md and personal-context-skill/.")
     p_ren.add_argument("--profile", type=Path, required=True)
     p_ren.add_argument("--out-dir", type=Path, default=Path.home() / ".pls-remember-me" / "out")
     p_ren.set_defaults(func=cmd_render)

@@ -10,7 +10,7 @@ Hard rules (FAIL):
 - evidence_refs each look like "<source>:<hash>:<anchor>" (loose check)
 
 Warnings (don't fail, but print):
-- missing 执行要求 / 反例 (recommended but not required in v0.9 MVP)
+- missing 执行要求 / 反例 (recommended but not required in v1)
 - axiom statement < 8 chars or > 200 chars
 - evidence_ref not present in source friction.jsonl (if --friction given)
 
@@ -99,7 +99,7 @@ def validate(profile: dict, known_refs: set[str] | None) -> tuple[list[str], lis
                 if known_refs is not None and ref not in known_refs:
                     warnings.append(f"{prefix}.evidence_refs[{j}]: ref {ref!r} not found in source friction.jsonl (possibly hallucinated)")
 
-        # recommended fields (warn only in v0.9 MVP)
+        # recommended fields (warn only in v1)
         if not ax.get("执行要求"):
             warnings.append(f"{prefix}: missing '执行要求' (recommended)")
         if not ax.get("反例"):
@@ -126,7 +126,7 @@ def rewrite_hint(errors: list[str]) -> str:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate profile.json against pls-remember-me v0.9 schema.")
+    parser = argparse.ArgumentParser(description="Validate profile.json against pls-remember-me v1 schema.")
     parser.add_argument("--profile", type=Path, required=True, help="Path to profile.json from AI")
     parser.add_argument("--friction", type=Path, default=None, help="Optional friction.jsonl to verify evidence_refs exist")
     args = parser.parse_args()

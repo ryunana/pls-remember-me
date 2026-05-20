@@ -40,7 +40,7 @@ axiom = "这位用户怎么判断 / 怎么取舍 / 怎么要求 AI 配合"，**�
 
 ```json
 {
-  "version": "v0.9",
+  "version": "v1",
   "generated_by": "<你是哪个 AI 工具，例如 claude-code 或 codex>",
   "source_stats": {
     "messages_reviewed": 0,
