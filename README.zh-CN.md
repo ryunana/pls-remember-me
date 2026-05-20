@@ -11,6 +11,8 @@
 - 可直接粘贴使用的 `profile.md`
 - 单独用于审计追溯的 `profile-evidence.md`
 - 可安装到 Codex 风格 skill 目录里的本地 `personal-context-skill/` 包
+- 可安装到 Claude Code 的本地 `claude-code-skill/` 包
+- 可选的 Claude Code 长期 memory 片段 `claude-code-memory/CLAUDE.md`
 
 这个项目不是聊天记录总结器。它的目标是产出第一份个人 context seed：你如何判断、如何取舍、希望 AI 怎样与你协作。
 
@@ -72,7 +74,7 @@ python3 scripts/pls_remember_me.py validate \
 
 如果校验失败，命令会打印一段可直接复制回 AI 的修订指令。
 
-### 4. 渲染 Markdown + Skill 包
+### 4. 渲染 Markdown + 本地 Context 包
 
 ```bash
 python3 scripts/pls_remember_me.py render --profile profile.json
@@ -84,6 +86,9 @@ python3 scripts/pls_remember_me.py render --profile profile.json
 - `~/.pls-remember-me/out/<timestamp>-profile-evidence.md`
 - `~/.pls-remember-me/out/personal-context-skill/SKILL.md`
 - `~/.pls-remember-me/out/personal-context-skill/context-profile.md`
+- `~/.pls-remember-me/out/claude-code-skill/personal-context/SKILL.md`
+- `~/.pls-remember-me/out/claude-code-skill/personal-context/context-profile.md`
+- `~/.pls-remember-me/out/claude-code-memory/CLAUDE.md`
 
 安装生成的 Codex skill：
 
@@ -91,6 +96,21 @@ python3 scripts/pls_remember_me.py render --profile profile.json
 mkdir -p ~/.codex/skills
 rm -rf ~/.codex/skills/personal-context
 cp -R ~/.pls-remember-me/out/personal-context-skill ~/.codex/skills/personal-context
+```
+
+安装生成的 Claude Code skill：
+
+```bash
+mkdir -p ~/.claude/skills
+rm -rf ~/.claude/skills/personal-context
+cp -R ~/.pls-remember-me/out/claude-code-skill/personal-context ~/.claude/skills/personal-context
+```
+
+如果想作为 Claude Code 长期 memory 使用，先人工审阅生成文件，再追加到用户级 memory：
+
+```bash
+mkdir -p ~/.claude
+cat ~/.pls-remember-me/out/claude-code-memory/CLAUDE.md >> ~/.claude/CLAUDE.md
 ```
 
 ## 当前 v1 支持范围
@@ -109,6 +129,8 @@ cp -R ~/.pls-remember-me/out/personal-context-skill ~/.codex/skills/personal-con
 - `profile.md` 渲染
 - evidence appendix 渲染
 - `personal-context-skill/` 渲染
+- `claude-code-skill/` 渲染
+- 可选 `claude-code-memory/` 渲染
 
 已知限制：
 
@@ -124,7 +146,7 @@ cp -R ~/.pls-remember-me/out/personal-context-skill ~/.codex/skills/personal-con
 
 这个仓库只包含机制和合成样本数据。
 
-真实日志、生成的 packet、生成的 profile 和生成的 skill 应留在 gitignored 或仓库外的本地路径，例如：
+真实日志、生成的 packet、生成的 profile 和生成的 context 包应留在 gitignored 或仓库外的本地路径，例如：
 
 - `~/.pls-remember-me/out`
 - `samples/out/`

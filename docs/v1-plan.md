@@ -12,7 +12,7 @@
 2. 把这些片段整理成可追溯、可脱敏、可交给 AI 的证据包。
 3. 让用户用自己选择的 AI 工具蒸馏出 `profile.json`。
 4. 校验 `profile.json` 的结构和证据引用。
-5. 渲染成可粘贴到新 AI 会话里的 `profile.md`、审计用 `profile-evidence.md` 和可安装的 personal context skill。
+5. 渲染成可粘贴到新 AI 会话里的 `profile.md`、审计用 `profile-evidence.md`、可安装的 Codex personal context skill、Claude Code skill 和可选 Claude Code memory 片段。
 
 它不是聊天记录总结器，也不是托管记忆的服务。v1 只做第一份可用 context seed，重点是“让新会话更快理解这个用户的判断方式”。
 
@@ -52,7 +52,7 @@ python3 scripts/pls_remember_me.py validate \
 python3 scripts/pls_remember_me.py render --profile profile.json
 ```
 
-默认真实输出目录是 `~/.pls-remember-me/out`。真实数据、真实画像和真实 skill 包不进入仓库。
+默认真实输出目录是 `~/.pls-remember-me/out`。真实数据、真实画像和真实 context 包不进入仓库。
 
 ## 3. 当前模块状态
 
@@ -62,7 +62,7 @@ python3 scripts/pls_remember_me.py render --profile profile.json
 | ingest | `scripts/ingest.py` | 已实现日志扫描、解析、脱敏、去噪、摘要和 friction 输出 |
 | packet | `scripts/packet.py` | 已实现 AI handoff packet 生成、长粘贴材料通用降权和 16K token 软上限 |
 | validate | `scripts/validate.py` | 已实现 JSON 结构、confidence、evidence refs 校验和失败回喂提示 |
-| render | `scripts/render.py` | 已实现 `profile.json` 到 `profile.md`、`profile-evidence.md` 和 `personal-context-skill/` 的基础渲染 |
+| render | `scripts/render.py` | 已实现 `profile.json` 到 `profile.md`、`profile-evidence.md`、`personal-context-skill/`、`claude-code-skill/` 和 `claude-code-memory/` 的基础渲染 |
 | demo | `scripts/run_demo.sh` | 已实现零数据 demo |
 
 ## 4. 当前支持的数据来源
@@ -84,7 +84,7 @@ v1 当前支持三种解析路径：
 
 v1 必须遵守这些边界：
 
-1. 仓库永不提交真实个人对话、真实 profile、真实 packet、真实 skill 包、真实路径映射。
+1. 仓库永不提交真实个人对话、真实 profile、真实 packet、真实 context 包、真实路径映射。
 2. `samples/` 只能放合成样本，可以受真实 dogfood 启发，但不能可识别、可回溯。
 3. 真实输出默认落到 `~/.pls-remember-me/out`。
 4. 仓库内临时 dogfood 输出必须落在 `.gitignore` 覆盖的目录，如 `local_dogfood/`、`samples/out/`、`out/`。
@@ -158,7 +158,7 @@ python3 scripts/pls_remember_me.py render --help
 
 同时确认：
 
-- `git ls-files` 不包含 `samples/out/`、`local_dogfood/`、真实 `profile.json`、真实 packet、真实 skill 包。
+- `git ls-files` 不包含 `samples/out/`、`local_dogfood/`、真实 `profile.json`、真实 packet、真实 context 包。
 - README 的“能做 / 不能做”与当前代码一致。
 - `docs/architecture.md` 如果仍保留目标架构表述，必须明确它不是当前实现清单。
 

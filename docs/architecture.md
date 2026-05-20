@@ -2,7 +2,7 @@
 
 > 本文档描述当前 v1 的实际架构，不是历史计划，也不是 v1.1 目标架构。
 >
-> 当前 v1 是一个本地流水线：把用户本机 AI 对话日志整理成证据包，让用户用自己选择的 AI 工具蒸馏 `profile.json`，再由本项目校验并渲染成干净的 `profile.md`、审计用 evidence appendix 和本地 skill 包。
+> 当前 v1 是一个本地流水线：把用户本机 AI 对话日志整理成证据包，让用户用自己选择的 AI 工具蒸馏 `profile.json`，再由本项目校验并渲染成干净的 `profile.md`、审计用 evidence appendix、Codex skill 包、Claude Code skill 包和可选 Claude Code memory 片段。
 
 ## 1. Product Boundary
 
@@ -14,7 +14,7 @@ v1 只做第一份可追溯的 personal context seed：
 2. 提取高信号用户片段。
 3. 生成可交给 AI 的 distillation packet。
 4. 校验 AI 产出的 profile JSON。
-5. 渲染成可粘贴的 Markdown profile、审计用 evidence appendix 和可安装的 personal context skill。
+5. 渲染成可粘贴的 Markdown profile、审计用 evidence appendix、可安装的 Codex personal context skill、Claude Code skill 和可选 memory 片段。
 
 v1 不是完整的长期 memory backend，也不是自动化托管服务。
 
@@ -22,12 +22,12 @@ v1 不是完整的长期 memory backend，也不是自动化托管服务。
 
 这些边界不能破：
 
-1. 仓库不提交真实个人数据、真实 profile、真实 packet、真实 skill 包、真实路径映射。
+1. 仓库不提交真实个人数据、真实 profile、真实 packet、真实 context 包、真实路径映射。
 2. 项目方不托管、不收集、不默认上传用户日志。
 3. 用户自己决定把 packet 交给哪个 AI 工具。
 4. 公开产物只使用 `public_ref`，不暴露本机路径、项目名、仓库名。
 5. 真实输出默认落到 `~/.pls-remember-me/out`。
-6. 本项目本体不是 skill；v1 输出的是用户自己的 personal context skill 包。
+6. 本项目本体不是 skill；v1 输出的是用户自己的 personal context 包。
 
 ## 3. Data Flow
 
@@ -68,6 +68,8 @@ scripts/render.py
   - emits paste-friendly profile.md
   - emits profile-evidence.md for audit refs
   - emits personal-context-skill/
+  - emits claude-code-skill/
+  - emits claude-code-memory/
 ```
 
 ## 4. Runtime Paths
@@ -209,9 +211,9 @@ The goal is to preserve sentence structure while removing obvious secrets, local
 
 It intentionally avoids raw file paths. It is suitable for evidence linking inside packet and profile artifacts.
 
-## 9. Skill Package Output
+## 9. Context Package Output
 
-`scripts/render.py` writes a stable skill package directory:
+`scripts/render.py` writes a stable Codex-style skill package directory:
 
 ```text
 ~/.pls-remember-me/out/personal-context-skill/
@@ -228,6 +230,31 @@ mkdir -p ~/.codex/skills
 rm -rf ~/.codex/skills/personal-context
 cp -R ~/.pls-remember-me/out/personal-context-skill ~/.codex/skills/personal-context
 ```
+
+It also writes a Claude Code skill package:
+
+```text
+~/.pls-remember-me/out/claude-code-skill/personal-context/
+├── SKILL.md
+└── context-profile.md
+```
+
+Users can install it into Claude Code with:
+
+```bash
+mkdir -p ~/.claude/skills
+rm -rf ~/.claude/skills/personal-context
+cp -R ~/.pls-remember-me/out/claude-code-skill/personal-context ~/.claude/skills/personal-context
+```
+
+It also writes an optional Claude Code memory fragment:
+
+```text
+~/.pls-remember-me/out/claude-code-memory/
+└── CLAUDE.md
+```
+
+`CLAUDE.md` can be reviewed and appended to `~/.claude/CLAUDE.md` if the user wants persistent Claude Code memory instead of skill-triggered loading.
 
 ## 10. Known Architecture Limits
 

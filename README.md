@@ -11,6 +11,8 @@ You then give that packet to an AI tool you choose. The AI produces a `profile.j
 - a paste-friendly `profile.md`
 - a separate `profile-evidence.md` audit appendix
 - a local `personal-context-skill/` package you can install into Codex-style skill directories
+- a local `claude-code-skill/` package you can install into Claude Code
+- an optional `claude-code-memory/CLAUDE.md` fragment for persistent Claude Code memory
 
 The goal is not to summarize your chat history. The goal is to produce a first personal context seed: how you judge, how you make tradeoffs, and how an AI should collaborate with you.
 
@@ -72,7 +74,7 @@ python3 scripts/pls_remember_me.py validate \
 
 If validation fails, the command prints a rewrite instruction you can paste back to the AI.
 
-### 4. Render Markdown + Skill Package
+### 4. Render Markdown + Local Context Packages
 
 ```bash
 python3 scripts/pls_remember_me.py render --profile profile.json
@@ -84,6 +86,9 @@ This writes:
 - `~/.pls-remember-me/out/<timestamp>-profile-evidence.md`
 - `~/.pls-remember-me/out/personal-context-skill/SKILL.md`
 - `~/.pls-remember-me/out/personal-context-skill/context-profile.md`
+- `~/.pls-remember-me/out/claude-code-skill/personal-context/SKILL.md`
+- `~/.pls-remember-me/out/claude-code-skill/personal-context/context-profile.md`
+- `~/.pls-remember-me/out/claude-code-memory/CLAUDE.md`
 
 To install the generated skill into Codex:
 
@@ -91,6 +96,21 @@ To install the generated skill into Codex:
 mkdir -p ~/.codex/skills
 rm -rf ~/.codex/skills/personal-context
 cp -R ~/.pls-remember-me/out/personal-context-skill ~/.codex/skills/personal-context
+```
+
+To install the generated Claude Code skill:
+
+```bash
+mkdir -p ~/.claude/skills
+rm -rf ~/.claude/skills/personal-context
+cp -R ~/.pls-remember-me/out/claude-code-skill/personal-context ~/.claude/skills/personal-context
+```
+
+For persistent Claude Code memory, review the generated file first, then append it to user memory:
+
+```bash
+mkdir -p ~/.claude
+cat ~/.pls-remember-me/out/claude-code-memory/CLAUDE.md >> ~/.claude/CLAUDE.md
 ```
 
 ## Current v1 Support
@@ -109,6 +129,8 @@ Implemented:
 - `profile.md` rendering
 - evidence appendix rendering
 - `personal-context-skill/` rendering
+- `claude-code-skill/` rendering
+- optional `claude-code-memory/` rendering
 
 Known limits:
 
@@ -124,7 +146,7 @@ Known limits:
 
 This repo contains mechanism and synthetic sample data only.
 
-Real logs, generated packets, generated profiles, and generated skills should stay in gitignored or external local paths such as:
+Real logs, generated packets, generated profiles, and generated context packages should stay in gitignored or external local paths such as:
 
 - `~/.pls-remember-me/out`
 - `samples/out/`
