@@ -1,0 +1,7 @@
+{"type":"user","sessionId":"demo-plan","uuid":"p1","timestamp":"2026-04-02T22:00:11Z","message":{"role":"user","content":[{"type":"text","text":"我们再细化一下这个 plan，先把第 4 节的字段表精修一遍。"}]}}
+{"type":"assistant","sessionId":"demo-plan","uuid":"pa1","parentUuid":"p1","timestamp":"2026-04-02T22:00:50Z","message":{"role":"assistant","content":[{"type":"text","text":"好。我建议把字段表再拆成主干 / 扩展 / meta 三层，每个字段加 schema_version……"}]}}
+{"type":"user","sessionId":"demo-plan","uuid":"p2","parentUuid":"pa1","timestamp":"2026-04-02T22:01:30Z","message":{"role":"user","content":[{"type":"text","text":"等等。plan 已经迭代 11 版了，scripts/ 目录还是空的。继续抽象打磨没有意义。先跑真实数据，再决定字段。"}]}}
+{"type":"user","sessionId":"demo-plan","uuid":"p3","parentUuid":"pa1","timestamp":"2026-04-02T22:15:20Z","message":{"role":"user","content":[{"type":"text","text":"v1 的范围一开始就太大了。砍到能 1 周交付的尺寸，要 1 个 adapter、最薄的 ingest、最小的 packet 就行。"}]}}
+{"type":"assistant","sessionId":"demo-plan","uuid":"pa2","parentUuid":"p3","timestamp":"2026-04-02T22:16:00Z","message":{"role":"assistant","content":[{"type":"text","text":"理解。我建议：保留 4 adapter 的能力但 v1 只 ship 2 个、samples 三件套缩水到……"}]}}
+{"type":"user","sessionId":"demo-plan","uuid":"p4","parentUuid":"pa2","timestamp":"2026-04-02T22:17:10Z","message":{"role":"user","content":[{"type":"text","text":"不行，2 个 adapter 反而证明不了 C1 设计成立。坚持 4 个。"}]}}
+{"type":"user","sessionId":"demo-plan","uuid":"p5","parentUuid":"pa2","timestamp":"2026-05-08T09:33:15Z","message":{"role":"user","content":[{"type":"text","text":"就算是个垃圾也先做出来再说吧。开工。"}]}}

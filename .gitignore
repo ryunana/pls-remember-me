@@ -1,0 +1,40 @@
+# ── 物理拦截一切个人产物，违反第一原则的东西永不进 git ──
+# 真实蒸馏产物
+out/
+samples/out/
+local_dogfood/
+dogfood/
+private_data/
+real_data/
+real_logs/
+local_out/
+distillation_packet.md
+profile.json
+profile.md
+AI_HANDOFF.local.md
+*.profile.json
+!samples/EXPECTED.profile.json
+*-friction.jsonl
+*-summary.md
+
+# 用户本机日志（万一有人把日志拷进项目目录）
+**/raw_logs/
+**/chatmemo_raw/
+**/claude_logs/
+**/codex_logs/
+
+# 个人画像/状态（旧项目结构同名目录，防误带——根路径锚定以避免误伤 samples/logs/）
+/contexts/
+/state/
+/logs/
+
+# 常规
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# Claude Code 本地配置（含本机路径，按 Claude Code 约定本就该 local-only）
+.claude/settings.local.json

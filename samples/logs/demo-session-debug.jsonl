@@ -1,0 +1,7 @@
+{"type":"user","sessionId":"demo-debug","uuid":"d1","timestamp":"2026-03-22T20:11:05Z","message":{"role":"user","content":[{"type":"text","text":"采集脚本又报错了，和上次一样的 RuntimeError。你检查一下是之前的改动没生效还是怎么回事。"}]}}
+{"type":"assistant","sessionId":"demo-debug","uuid":"da1","parentUuid":"d1","timestamp":"2026-03-22T20:11:40Z","message":{"role":"assistant","content":[{"type":"text","text":"可能的原因有以下几种：1) 上次的修复没合到主分支；2) 桌面端版本升级导致……"}]}}
+{"type":"user","sessionId":"demo-debug","uuid":"d2","parentUuid":"da1","timestamp":"2026-03-22T20:12:30Z","message":{"role":"user","content":[{"type":"text","text":"不要列可能性，先查证。证据不足的话明说证据不足，不要脑补三种可能让我猜。"}]}}
+{"type":"assistant","sessionId":"demo-debug","uuid":"da2","parentUuid":"d2","timestamp":"2026-03-22T20:13:00Z","message":{"role":"assistant","content":[{"type":"text","text":"好。我现在去看 git log 和实际进程状态。"}]}}
+{"type":"user","sessionId":"demo-debug","uuid":"d3","parentUuid":"da2","timestamp":"2026-03-22T20:25:42Z","message":{"role":"user","content":[{"type":"text","text":"我是产品经理，看不太懂这些技术细节，默认你判断是对的。但我想要的是，这些工作做完之后，相同的问题是否还会复发？如果不会，那就按你的方法修。如果只是临时止血，必须明说。"}]}}
+{"type":"user","sessionId":"demo-debug","uuid":"d4","parentUuid":"da2","timestamp":"2026-04-18T11:08:33Z","message":{"role":"user","content":[{"type":"text","text":"模仿真人浏览的脚本，你可以犯错，但不要一遍又一遍犯相同的错。每次踩坑要把原因写到 notes 里。"}]}}
+{"type":"user","sessionId":"demo-debug","uuid":"d5","parentUuid":"da2","timestamp":"2026-04-18T11:30:00Z","message":{"role":"user","content":[{"type":"text","text":"这份简历里写'考勤自动对班项目'，但是事实错误——那个项目根本不是 AI 项目。必须改掉，不要为了完整性而保留错的内容。"}]}}

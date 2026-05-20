@@ -1,0 +1,8 @@
+{"type":"user","sessionId":"demo-product","uuid":"u1","timestamp":"2026-03-10T09:14:22Z","message":{"role":"user","content":[{"type":"text","text":"帮我看一下这份 PRD，业务方说要做一个智能审批助手。"}]}}
+{"type":"assistant","sessionId":"demo-product","uuid":"a1","parentUuid":"u1","timestamp":"2026-03-10T09:14:50Z","message":{"role":"assistant","content":[{"type":"text","text":"整体来看，这份 PRD 设计了一个非常先进的智能审批助手，能够大幅提升企业运营效率，赋能 HR 数字化转型……"}]}}
+{"type":"user","sessionId":"demo-product","uuid":"u2","parentUuid":"a1","timestamp":"2026-03-10T09:15:30Z","message":{"role":"user","content":[{"type":"text","text":"别堆这种废话，具体讲，谁触发、走哪个流程、出什么结果。一句价值描述都不要，直接讲落地细节。"}]}}
+{"type":"assistant","sessionId":"demo-product","uuid":"a2","parentUuid":"u2","timestamp":"2026-03-10T09:16:10Z","message":{"role":"assistant","content":[{"type":"text","text":"明白。触发：员工在企微提交差旅申请→进入 AI 预审节点……"}]}}
+{"type":"user","sessionId":"demo-product","uuid":"u3","parentUuid":"a2","timestamp":"2026-03-10T09:17:00Z","message":{"role":"user","content":[{"type":"text","text":"这里的边界没切清。AI 预审到底负责什么、不负责什么？合规校验是 AI 做还是规则引擎做？不要把规则引擎该做的事塞给 AI。"}]}}
+{"type":"user","sessionId":"demo-product","uuid":"u4","parentUuid":"a2","timestamp":"2026-03-10T10:02:11Z","message":{"role":"user","content":[{"type":"text","text":"你这版评分逻辑和具体账号定位强绑了。换一个号体系就得推倒重来——这显然不是要的。重新设计成通用判断 + 适配层。"}]}}
+{"type":"user","sessionId":"demo-product","uuid":"u5","parentUuid":"a2","timestamp":"2026-04-05T15:32:08Z","message":{"role":"user","content":[{"type":"text","text":"还有一个问题是，目前评分没有把热门话题相关性考虑进去。先把这个补上，但不要扩展到另一个选题，先聚焦评分本身。"}]}}
+{"type":"user","sessionId":"demo-product","uuid":"u6","parentUuid":"a2","timestamp":"2026-04-05T15:45:00Z","message":{"role":"user","content":[{"type":"text","text":"产品方案不能只写'提升效率、优化体验、赋能管理'这种东西。必须能直接支撑评审、研发理解、测试拆解。"}]}}
