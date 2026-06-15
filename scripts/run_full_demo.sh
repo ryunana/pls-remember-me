@@ -49,6 +49,31 @@ cp -R "$RENDER_DIR/personal-context-skill" "$OUT_DIR/personal-context-skill"
 cp -R "$RENDER_DIR/claude-code-skill" "$OUT_DIR/claude-code-skill"
 cp -R "$RENDER_DIR/claude-code-memory" "$OUT_DIR/claude-code-memory"
 
+cat > "$OUT_DIR/result-card.md" <<'EOF'
+# pls-remember-me Demo Result Card
+
+```text
+┌──────────────────────────────────────────────┐
+│  Personal Context Seed                       │
+│                                              │
+│  Positioning: Turn past AI corrections into  │
+│  a traceable personal context seed.          │
+│                                              │
+│  Input: synthetic Claude-style logs          │
+│  Evidence: high-signal user corrections      │
+│  Output: profile.md + evidence appendix      │
+│  Packages: Codex skill + Claude Code skill   │
+│  Boundary: local-first, user-chosen AI handoff│
+│                                              │
+│  Next: run on your real logs, inspect, install│
+└──────────────────────────────────────────────┘
+```
+
+Turn past AI corrections into a traceable personal context seed.
+
+This card is generated from synthetic sample data. It is safe to screenshot or paste into a README, release note, or project page.
+EOF
+
 echo
 echo "============================================================"
 echo "Full demo done. Stable outputs:"
@@ -57,6 +82,7 @@ echo "  $OUT_DIR/profile-evidence.md"
 echo "  $OUT_DIR/personal-context-skill/SKILL.md"
 echo "  $OUT_DIR/claude-code-skill/personal-context/SKILL.md"
 echo "  $OUT_DIR/claude-code-memory/CLAUDE.md"
+echo "  $OUT_DIR/result-card.md"
 echo
 echo "These files are generated from synthetic sample data and ignored by git."
 echo "Use them to inspect the final shape before running on real logs."

@@ -40,7 +40,20 @@ samples/out/full-demo/
 ├── claude-code-skill/personal-context/
 │   ├── SKILL.md
 │   └── context-profile.md
-└── claude-code-memory/CLAUDE.md
+├── claude-code-memory/CLAUDE.md
+└── result-card.md
+```
+
+`result-card.md` is a screenshot-friendly summary of the demo output:
+
+```text
+┌──────────────────────────────────────────────┐
+│  Personal Context Seed                       │
+│  Input: synthetic Claude-style logs          │
+│  Evidence: high-signal user corrections      │
+│  Output: profile.md + evidence appendix      │
+│  Packages: Codex skill + Claude Code skill   │
+└──────────────────────────────────────────────┘
 ```
 
 A rendered rule looks like this:

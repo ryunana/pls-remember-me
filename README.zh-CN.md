@@ -40,7 +40,20 @@ samples/out/full-demo/
 ├── claude-code-skill/personal-context/
 │   ├── SKILL.md
 │   └── context-profile.md
-└── claude-code-memory/CLAUDE.md
+├── claude-code-memory/CLAUDE.md
+└── result-card.md
+```
+
+`result-card.md` 是一张适合截图传播的 demo 结果卡：
+
+```text
+┌──────────────────────────────────────────────┐
+│  Personal Context Seed                       │
+│  Input: synthetic Claude-style logs          │
+│  Evidence: high-signal user corrections      │
+│  Output: profile.md + evidence appendix      │
+│  Packages: Codex skill + Claude Code skill   │
+└──────────────────────────────────────────────┘
 ```
 
 一条渲染后的规则长这样：
