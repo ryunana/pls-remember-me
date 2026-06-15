@@ -1,0 +1,51 @@
+{
+  "version": "v1",
+  "generated_by": "synthetic-demo",
+  "source_stats": {
+    "messages_reviewed": 16,
+    "evidence_used": 8
+  },
+  "axioms": [
+    {
+      "statement": "用户要求先查证再判断，证据不足时明说不足，不用脑补选项替用户猜。",
+      "confidence": "medium",
+      "执行要求": "回答前优先检索、运行验证或说明证据缺口；不要用未经验证的可能性替代结论。",
+      "反例": "创意发散、命名或头脑风暴任务可以先给候选方向，但仍要标注它们只是候选。",
+      "evidence_refs": [
+        "claude-code:3e52d5c43d:d2",
+        "claude-code:3e52d5c43d:d3"
+      ]
+    },
+    {
+      "statement": "用户偏好可落地的流程边界和复发防护，而不是泛化价值描述。",
+      "confidence": "high",
+      "执行要求": "方案要说清谁触发、走哪个流程、产出什么结果；修 bug 时说明是根治还是临时止血。",
+      "反例": "面向外部传播的口号可以短，但落地方案仍必须补流程、角色和验收标准。",
+      "evidence_refs": [
+        "claude-code:802dcbbd46:u2",
+        "claude-code:802dcbbd46:u3",
+        "claude-code:802dcbbd46:u6"
+      ]
+    },
+    {
+      "statement": "用户希望先聚焦当前最小问题，避免为了完整性扩展到新选题或保留错误内容。",
+      "confidence": "medium",
+      "执行要求": "改动前明确本轮范围；发现事实错误时删除或修正，不要为了叙事完整硬保留。",
+      "反例": "当用户明确要求做路线图或全量规划时，可以展开多个阶段，但仍要区分本轮不做。",
+      "evidence_refs": [
+        "claude-code:3e52d5c43d:d5",
+        "claude-code:802dcbbd46:u5"
+      ]
+    },
+    {
+      "statement": "用户更信任真实运行结果，而不是反复抽象打磨或只看表面状态。",
+      "confidence": "medium",
+      "执行要求": "能跑真实数据就先跑；用实际产物、失败日志或回放结果决定下一步。",
+      "反例": "早期概念探索可以先写草案，但不能把草案当作已验证结论。",
+      "evidence_refs": [
+        "claude-code:c8a9599f48:p2",
+        "claude-code:3e52d5c43d:d1"
+      ]
+    }
+  ]
+}

@@ -4,17 +4,66 @@
 
 > Stop reintroducing yourself to every new AI session.
 
-`pls-remember-me` is a local tool for heavy AI users. It scans your own Claude Code / Codex style chat logs, extracts high-signal moments where you corrected, constrained, or redirected an AI, and turns them into a traceable evidence packet.
+`pls-remember-me` turns your past AI corrections into a traceable personal context seed. It scans your local Claude Code / Codex style chat logs, extracts high-signal moments where you corrected, constrained, or redirected an AI, and prepares an evidence packet for a model you choose.
 
-You then give that packet to an AI tool you choose. The AI produces a `profile.json`; this project validates it and renders:
+The model produces `profile.json`; this project validates it and renders context artifacts you can actually use:
 
 - a paste-friendly `profile.md`
 - a separate `profile-evidence.md` audit appendix
-- a local `personal-context-skill/` package you can install into Codex-style skill directories
-- a local `claude-code-skill/` package you can install into Claude Code
+- a local `personal-context-skill/` package for Codex-style skill directories
+- a local `claude-code-skill/` package for Claude Code
 - an optional `claude-code-memory/CLAUDE.md` fragment for persistent Claude Code memory
 
 The goal is not to summarize your chat history. The goal is to produce a first personal context seed: how you judge, how you make tradeoffs, and how an AI should collaborate with you.
+
+## What You Get After The Demo
+
+Run the full synthetic demo:
+
+```bash
+git clone https://github.com/ryunana/pls-remember-me.git
+cd pls-remember-me
+bash scripts/run_full_demo.sh
+```
+
+It uses only committed synthetic logs and the committed `samples/demo-profile.json`. No real user logs are read.
+
+Stable generated outputs are written under the gitignored `samples/out/full-demo/` directory:
+
+```text
+samples/out/full-demo/
+├── profile.md
+├── profile-evidence.md
+├── personal-context-skill/
+│   ├── SKILL.md
+│   └── context-profile.md
+├── claude-code-skill/personal-context/
+│   ├── SKILL.md
+│   └── context-profile.md
+└── claude-code-memory/CLAUDE.md
+```
+
+A rendered rule looks like this:
+
+```markdown
+### 用户要求先查证再判断，证据不足时明说不足，不用脑补选项替用户猜。
+
+How the AI should behave: 回答前优先检索、运行验证或说明证据缺口；不要用未经验证的可能性替代结论。
+When not to over-apply it: 创意发散、命名或头脑风暴任务可以先给候选方向，但仍要标注它们只是候选。
+```
+
+The generated skill points the agent at `context-profile.md` first, while evidence refs stay in the separate appendix for audit instead of being loaded into every session.
+
+## Why This Is Not Another Memory Backend
+
+| If you want... | Use... | Why |
+|---|---|---|
+| automatic long-term capture, indexing, and recall | a memory backend such as memsearch / episodic-memory / claude-mem | those tools manage ongoing memory infrastructure |
+| one clean starting profile for a new AI tool | `pls-remember-me` | it distills your prior corrections into a portable context seed |
+| evidence-backed collaboration rules without uploading logs by default | `pls-remember-me` | the packet is local, and you choose which AI sees it |
+| a searchable archive of every past decision | a semantic memory/search system | `pls-remember-me` intentionally selects high-signal friction, not everything |
+
+`pls-remember-me` is best used before or alongside a memory backend: generate the first personal context seed, inspect the evidence, then paste or install the rendered context where you want it.
 
 ## What It Does Not Do
 
@@ -26,21 +75,43 @@ The goal is not to summarize your chat history. The goal is to produce a first p
 
 Your real data stays on your machine and inside the AI tool you explicitly choose for distillation.
 
-## Try It With No Personal Data
+## Quick Demos
+
+### Packet-only demo
 
 ```bash
-git clone https://github.com/ryunana/pls-remember-me.git
-cd pls-remember-me
 bash scripts/run_demo.sh
 ```
 
-The demo uses synthetic logs under `samples/logs/` and writes gitignored output to `samples/out/`:
+This proves the first half of the local pipeline:
 
-- `*-summary.md`
-- `*-friction.jsonl`
-- `*-distillation_packet.md`
+```text
+samples/logs/ → summary.md + friction.jsonl + distillation_packet.md
+```
 
-This proves the local pipeline works. The demo data is intentionally small, so it only shows the format, not the real value of running on your own history.
+### Full synthetic demo
+
+```bash
+bash scripts/run_full_demo.sh
+```
+
+This proves the public end-to-end shape:
+
+```text
+samples/logs/
+  → distillation_packet.md
+  → samples/demo-profile.json
+  → validate
+  → profile.md + evidence appendix + installable context packages
+```
+
+### Smoke test
+
+```bash
+bash scripts/test_full_demo.sh
+```
+
+This validates that the full synthetic demo renders all expected artifacts.
 
 ## Run It On Your Logs
 
